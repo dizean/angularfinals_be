@@ -4,7 +4,7 @@ import { Request, Response } from "express";
 const prisma = new PrismaClient();
 
 async function Create(req: Request, res: Response) {
-  const { itemName, date, listId } = req.body;
+  const { itemName, date, listId } = req.body.data;
   // const { itemName, date } = req.body.data.items.create;
 
   try {
