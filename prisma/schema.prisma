@@ -1,0 +1,48 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model Account{
+  id String    @id @default(auto()) @map("_id") @db.ObjectId
+  username String
+  password String
+
+  lists Lists[]
+}
+
+model Lists{
+ id String    @id @default(auto()) @map("_id") @db.ObjectId
+ listName String
+ userId  String @db.ObjectId
+ user Account @relation(references: [id], fields: [userId], onDelete: Cascade, onUpdate: Cascade)
+
+ items Items[] 
+}
+
+ model Items{
+  id String    @id @default(auto()) @map("_id") @db.ObjectId
+  itemName String
+  date String
+  listId String @db.ObjectId
+  lists Lists @relation(references: [id],fields: [listId], onDelete: Cascade, onUpdate: Cascade)
+ }
+
+
+
+ //create acc -> get user id to create a new list -> get list id to create a new item
+ //list associates with lists and lists and associates with item
+ //flow
+ //creae acc then user creates list 
+ //click list to create items in that list
+ //create new acc, same process
