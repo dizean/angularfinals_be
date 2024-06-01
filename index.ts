@@ -8,8 +8,16 @@ const bodyParser = require('body-parser');
 const PORT = 8080;
 const app = express()
 //backend branch testssss
+const dev = {
+  origin: "http://localhost:4200"
+}
 
-app.use(cors());
+const prod = {
+  origin: "https://charlesits320.vercel.app"
+}
+
+app.use(cors(prod));
+
 app.use(bodyParser.json());
 
 
