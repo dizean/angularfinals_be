@@ -94,7 +94,7 @@ async function Delete(req:Request, res: Response) {
 
   async function Login(req: Request, res: Response) {
     try {
-      const { username, password } = req.body;
+      const { username, password } = req.body.data;
       const result = await prisma.account.findFirst({
         where: {
           username,
