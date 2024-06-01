@@ -17,7 +17,7 @@ const prod = {
   origin: "https://charlesits320.vercel.app"
 }
 
-app.use(cors(prod));
+app.use(cors(dev));
 
 app.use(bodyParser.json());
 
