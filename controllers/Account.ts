@@ -103,6 +103,7 @@ async function Delete(req:Request, res: Response) {
       if (!result) {
         return res.status(401).json({ message: 'Account not found' });
       }
+      console.log(result)
       const match = await bcrypt.compare(password, result.password);
       if (match) {
         return res.status(200).json({ message: 'Login successful' }); 
