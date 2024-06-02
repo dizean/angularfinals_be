@@ -5,17 +5,23 @@ const prisma = new PrismaClient();
 
 async function Create(req: Request, res: Response) {
   const { itemName, date, listId } = req.body.data;
-  // const { itemName, date } = req.body.data.items.create;
-
   try {
-    const result = await prisma.items.create({
-      data: {
-        itemName,
-        date,
-        listId
-      }
-    });
-    return res.status(200).json(result);
+    const itemExist = await prisma.items.findFirst({
+      where: {itemName}
+    })
+    if(itemExist){
+      return res.status(400).json({ message: 'Item name already exists' });
+    }
+    else{
+      const result = await prisma.items.create({
+        data: {
+          itemName,
+          date,
+          listId
+        }
+      });
+      return res.status(200).json(result);
+    }
   } catch (error) {
     console.error("Error creating item:", error);
     res.status(500).json({ message: "Error creating item", error });

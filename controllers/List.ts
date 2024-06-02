@@ -6,13 +6,21 @@ const prisma = new PrismaClient();
 async function Create(req: Request, res: Response) {
   const { listName, userId } = req.body.data; 
   try {
-    const result = await prisma.lists.create({
-      data: {
-        listName,
-        userId
-      },
-    });
-    return res.status(200).json(result);
+    const listExist = await prisma.lists.findFirst({
+      where:{listName}
+    })
+    if (listExist){
+      return res.status(400).json({ message: 'List name already exists' });
+    }
+    else{
+      const result = await prisma.lists.create({
+        data: {
+          listName,
+          userId
+        },
+      });
+      return res.status(200).json(result);
+    }
   } catch (error) {
     console.error("Error creating acciunt:", error);
     res.status(500).json({ message: "Error creating account", error });
@@ -66,6 +74,6 @@ async function getUserList(req: Request, res: Response) {
   }
 }
 
-const ListControl = { Create, Delete, Update };
+const ListControl = { Create, Delete, Update, getUserList };
 
 export default ListControl;

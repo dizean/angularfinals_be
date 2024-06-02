@@ -4,21 +4,28 @@ const prisma = new PrismaClient();
 const bcrypt = require('bcryptjs'); 
 
 async function Create(req: Request, res: Response) {
-    const {username,password} = req.body;
-    const hashedPassword = await bcrypt.hash(password, 10); 
-    try{ 
-            const result = await prisma.account.create({
-                data: {
-                    username,
-                    password: hashedPassword
-                },
-            });
-        return res.status(200).json(result);
+  const prisma = new PrismaClient(); 
+  const { username, password } = req.body;
+  try {
+    const userExist = await prisma.account.findFirst({
+      where: { username }
+    });
+    if (userExist) {
+      return res.status(400).json({ message: 'Username already exists' });
     }
-    catch(error){
-        console.error('Error creating acciunt:', error);
-        res.status(500).json({ message: 'Error creating account', error });
-    }
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const result = await prisma.account.create({
+      data: {
+        username,
+        password: hashedPassword
+      }
+    });
+
+    return res.status(201).json(result);
+  } catch (error) {
+    console.error('Error creating account:', error);
+    res.status(500).json({ message: 'Error creating account' });
+  }
 }
 async function Get(req: Request, res: Response) {
   const accountId = req.params.id;
@@ -99,14 +106,14 @@ async function Delete(req:Request, res: Response) {
         where: {
           username,
         },
+        
       });
       if (!result) {
         return res.status(401).json({ message: 'Account not found' });
       }
-      console.log(result)
       const match = await bcrypt.compare(password, result.password);
       if (match) {
-        return res.status(200).json({ message: 'Login successful' }); 
+        return res.status(200).json({ message: 'Login successful', id: result.id }); 
       } else {
         return res.status(401).json({ error: 'Invalid password' });
       }
