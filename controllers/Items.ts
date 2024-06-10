@@ -1,30 +1,26 @@
 import { PrismaClient } from "@prisma/client";
 import { Request, Response } from "express";
+import { connect } from "http2";
 
 const prisma = new PrismaClient();
 
 async function Create(req: Request, res: Response) {
-  const { itemName, date, listId } = req.body.data;
+  const { itemName, date, id } = req.body;
   try {
-    const itemExist = await prisma.items.findFirst({
-      where: {itemName}
-    })
-    if(itemExist){
-      return res.status(400).json({ message: 'Item name already exists' });
-    }
-    else{
-      const result = await prisma.items.create({
-        data: {
-          itemName,
-          date,
-          listId
+    const result = await prisma.items.create({
+      data: {
+        itemName,
+        date,
+        lists: {
+          connect: { id } 
         }
-      });
+      }
+    })
+    
       return res.status(200).json(result);
-    }
   } catch (error) {
-    console.error("Error creating item:", error);
-    res.status(500).json({ message: "Error creating item", error });
+    console.error("Error creating list:", error);
+    res.status(500).json({ message: "Error creating list", error });
   }
 }
 async function Delete(req:Request, res: Response) {
@@ -44,7 +40,8 @@ async function Delete(req:Request, res: Response) {
 } 
 async function Update(req: Request, res: Response) {
   const id = req.params.id;
-  const {itemName,date} = req.body.data;
+  const {itemName,date, listId} = req.body;
+  console.log(id,req.body);
   try {
     const result = await prisma.items.update({
       where: {
@@ -52,7 +49,10 @@ async function Update(req: Request, res: Response) {
       },
       data: {
       itemName,
-      date
+      date,
+      lists : {
+        connect: { id: listId }
+      }
       },
     });
     return res.json(result);

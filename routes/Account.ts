@@ -9,7 +9,8 @@ router.route("/delete/:id").delete(AccountControl.Delete); // get
 router.route("/login").post(AccountControl.Login); // glogin
 router.route("/test").get(AccountControl.Test); // get
 router.route("/update/:id").put(AccountControl.Update); // get
-
+router.route("/countlist/:id").get(AccountControl.CountLists); // get
+router.route("/countitems/:id").get(AccountControl.CountItems); 
 const Accountroute = router;
 
 export default Accountroute;

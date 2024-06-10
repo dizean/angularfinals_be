@@ -4,26 +4,21 @@ import { Request, Response } from "express";
 const prisma = new PrismaClient();
 
 async function Create(req: Request, res: Response) {
-  const { listName, userId } = req.body.data; 
+  const { listName, id } = req.body; 
   try {
-    const listExist = await prisma.lists.findFirst({
-      where:{listName}
+    const result = await prisma.lists.create({
+      data: {
+        listName,
+        user: {
+          connect: { id } 
+        }
+      }
     })
-    if (listExist){
-      return res.status(400).json({ message: 'List name already exists' });
-    }
-    else{
-      const result = await prisma.lists.create({
-        data: {
-          listName,
-          userId
-        },
-      });
+    
       return res.status(200).json(result);
-    }
   } catch (error) {
-    console.error("Error creating acciunt:", error);
-    res.status(500).json({ message: "Error creating account", error });
+    console.error("Error creating list:", error);
+    res.status(500).json({ message: "Error creating list", error });
   }
 }
 async function Delete(req:Request, res: Response) {
@@ -43,14 +38,14 @@ async function Delete(req:Request, res: Response) {
 } 
 async function Update(req: Request, res: Response) {
   const id = req.params.id;
-  const {listName} = req.body.data;
+  const { listName, userId }  = req.body;
+  console.log(id, req.body);
   try {
     const result = await prisma.lists.update({
-      where: {
-        id,
-      },
+      where: { id },
       data: {
-      listName
+        listName,
+        user: { connect: { id: userId } },
       },
     });
     return res.json(result);

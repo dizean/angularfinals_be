@@ -7,6 +7,6 @@ router.route("/create").post(ItemControl.Create); // create
 router.route("/delete/:id").delete(ItemControl.Delete); // create
 router.route("/update/:id").put(ItemControl.Update); // get
 router.route("/display/:id").get(ItemControl.getListItems); // get
-const Accountroute = router;
+const ItemsRoute = router;
 
-export default Accountroute;
+export default ItemsRoute;

@@ -80,8 +80,9 @@ async function Delete(req:Request, res: Response) {
   }
   async function Update(req: Request, res: Response) {
     const id = req.params.id;
-    const {username,password} = req.body.data;
+    const {username,password} = req.body;
     const hashedPassword = await bcrypt.hash(password, 10);
+    console.log(username,password)
     try {
       const result = await prisma.account.update({
         where: {
@@ -123,9 +124,57 @@ async function Delete(req:Request, res: Response) {
     }
   }
 
-async function Test(req: Request, res: Response) {
-    return res.json({ message: 'Hello sir uwu' });
+  async function CountLists(req: Request, res: Response) {
+    const id = req.params.id; 
+    try {
+      const result = await prisma.account.findUnique({
+        where: { id },
+        select: {
+          _count: {
+            select: { lists: true },
+          },
+        },
+      });
+      if (!result){
+        return res.status(404).json({ message: 'Wala unod men' });
+      }
+      return res.json({ listCount: result._count?.lists || 0 }); 
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ message: 'Internal server error' }); 
+    }
   }
-const AccountControl = {Create, Get, Test, Login, Delete, Update};
+  
+  async function CountItems(req: Request, res: Response) {
+    const id = req.params.id;
+    try {
+      const account = await prisma.account.findUnique({
+        where: { id },
+        select: {
+          lists: {
+            select: {
+              _count: { 
+                select: { items: true },
+              },
+            },
+          },
+        },
+      });
+  
+      if (!account) {
+        return res.status(404).json({ message: 'Wala unod men (Account not found)' });
+      }
+      const allItem = account.lists.reduce((acc, list) => acc + list._count.items, 0);
+      return res.json({ allItem });
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ message: 'Internal server error' });
+    }
+  }
+  
+async function Test(req: Request, res: Response) {
+    return res.json({ message: 'Hello Test uwu' });
+  }
+const AccountControl = {Create, Get, Test, Login, Delete, Update, CountLists, CountItems};
 
 export default AccountControl;
