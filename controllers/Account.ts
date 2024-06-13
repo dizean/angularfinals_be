@@ -114,7 +114,7 @@ async function Delete(req:Request, res: Response) {
       }
       const match = await bcrypt.compare(password, result.password);
       if (match) {
-        return res.status(200).json({ message: 'Login successful', id: result.id }); 
+        return res.status(200).json({ message: 'Login successful', id: result.id, username }); 
       } else {
         return res.status(401).json({ error: 'Invalid password' });
       }
