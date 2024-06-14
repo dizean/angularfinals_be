@@ -14,7 +14,7 @@ const dev = {
 }
 
 const prod = {
-  origin: "https://charlesits320.vercel.app"
+  origin: "https://angularfinals.vercel.app"
 }
 
 app.use(cors(prod));
